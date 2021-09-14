@@ -4,13 +4,22 @@
 //name from a record to match.
 
 function name_match(knownNames, name) {
-  //initialize res
-  let res = false;
-  res = knownNames.some(n => n == name);
-  if (res === true) return res;
+  //initialize result
+  let result = false;
+  //if the candidate name matches the record print true
+  // result = knownNames.some(n => n == name);
+  // if (result === true) return result;
 
+  for (let i = 0; i < knownNames.length; i++) {
+    if (knownNames[i] === name) {
+      return (result = true);
+    }
+  }
+
+  // break the name into parts, if first name and last name checks out, true
   let names = name.split(" ");
 
+  // save submitted first name , last name , middle name for use
   let firstName = names[0];
   let middleName;
   let lastName;
@@ -29,49 +38,20 @@ function name_match(knownNames, name) {
         nameParts[0] == firstName &&
         nameParts[nameParts.length - 1] == lastName
       ) {
-        res = true;
+        result = true;
         return;
       }
       // there are 3 so we do another condition for middle Initial
     } else {
       if (nameParts[1][0] === middleName[0]) {
-        res = true;
+        result = true;
         return;
       }
     }
   });
 
-  return res;
+  return result;
 }
-// function name_match(knownNames, name) {
-//   //if the candidate name matches the record print true
-//   for (let i = 0; i < knownNames.length; i++) {
-//     if (knownNames[i] === name) return true;
-//   }
-
-//   // check first name , last name , middle name
-//   // break the name into parts, if first name and last name checks out, true
-//   let nameParts = name.split(" ");
-
-//   // if there is a middle name or multiple middle names
-//   if (nameParts.length >= 3) {
-//     for (let i = 0; i < nameParts.length; i++) {
-//       let firstName = nameParts[0];
-//       let lastName = nameParts.pop();
-//       let fullName = firstName + " " + lastName;
-//       fullName.toString();
-//       if (fullName == knownNames) return true;
-//     }
-//     // if there is no middle name compare first and last
-//   } else if (nameParts.length === 2) {
-//     let knownParts = knownNames[0].split(" ");
-//     let firstKnown = knownNames[0];
-//     let lastKnown = knownParts.pop();
-//     let fullKnown = firstKnown + " " + lastKnown;
-//   }
-// }
-
-// console.log(name_match(knownNames3, submittedName6));
 
 function test() {
   // -------------------------------------------------------------
