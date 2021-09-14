@@ -7,9 +7,6 @@ function name_match(knownNames, name) {
   //initialize result
   let result = false;
   //if the candidate name matches the record print true
-  // result = knownNames.some(n => n == name);
-  // if (result === true) return result;
-
   for (let i = 0; i < knownNames.length; i++) {
     if (knownNames[i] === name) {
       return (result = true);
