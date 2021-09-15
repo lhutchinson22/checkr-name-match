@@ -1,36 +1,119 @@
-//CHECKR name match
+/******************
+ * Name Matching
+ *
+ *   At Checkr, one of the most important aspects of our work is accurately matching records
+ * to candidates. One of the ways that we do this is by comparing the name on a given record
+ * to a list of known aliases for the candidate. In this exercise, we will implement a
+ * `nameMatch` method that accepts the list of known aliases as well as the name returned
+ * on a record. It should return true if the name matches any of the aliases and false otherwise.
+ *
+ * The nameMatch method will be required to pass the following tests:
+ *
+ * 1. Exact match
+ *
+ *   knownAliases = ["Alphonse Gabriel Capone", "Al Capone"]
+ *   nameMatch(knownAliases, "Alphonse Gabriel Capone") => true
+ *   nameMatch(knownAliases, "Al Capone")               => true
+ *   nameMatch(knownAliases, "Alphonse Francis Capone") => false
+ *
+ *
+ * 2. Middle name missing (on alias)
+ *
+ *   knownAliases = ["Alphonse Capone"]
+ *   nameMatch(knownAliases, "Alphonse Gabriel Capone") => true
+ *   nameMatch(knownAliases, "Alphonse Francis Capone") => true
+ *   nameMatch(knownAliases, "Alexander Capone")        => false
+ *
+ *
+ * 3. Middle name missing (on record name)
+ *
+ *   knownAliases = ["Alphonse Gabriel Capone"]
+ *   nameMatch(knownAliases, "Alphonse Capone")         => true
+ *   nameMatch(knownAliases, "Alphonse Francis Capone") => false
+ *   nameMatch(knownAliases, "Alexander Capone")        => false
+ *
+ *
+ * 4. More middle name tests
+ *    These serve as a sanity check of your implementation of cases 2 and 3
+ *
+ *   knownAliases = ["Alphonse Gabriel Capone", "Alphonse Francis Capone"]
+ *   nameMatch(knownAliases, "Alphonse Gabriel Capone") => true
+ *   nameMatch(knownAliases, "Alphonse Francis Capone") => true
+ *   nameMatch(knownAliases, "Alphonse Edward Capone")  => false
+ *
+ *
+ * 5. Middle initial matches middle name
+ *
+ *   knownAliases = ["Alphonse Gabriel Capone", "Alphonse F Capone"]
+ *   nameMatch(knownAliases, "Alphonse G Capone")       => true
+ *   nameMatch(knownAliases, "Alphonse Francis Capone") => true
+ *   nameMatch(knownAliases, "Alphonse E Capone")       => false
+ *   nameMatch(knownAliases, "Alphonse Edward Capone")  => false
+ *   nameMatch(knownAliases, "Alphonse Gregory Capone") => false
+ *
+ *
+ * Bonus: Transposition
+ *
+ * Transposition (swapping) of the first name and middle name is relatively common.
+ * In order to accurately match the name returned from a record we should take this
+ * into account.
+ *
+ * All of the test cases implemented previously also apply to the transposed name.
+ *
+ *
+ * 6. First name and middle name can be transposed
+ *
+ *   "Gabriel Alphonse Capone" is a valid transposition of "Alphonse Gabriel Capone"
+ *
+ *   knownAliases = ["Alphonse Gabriel Capone"]
+ *   nameMatch(knownAliases, "Gabriel Alphonse Capone") => true
+ *   nameMatch(knownAliases, "Gabriel A Capone")        => true
+ *   nameMatch(knownAliases, "Gabriel Capone")          => true
+ *   nameMatch(knownAliases, "Gabriel Francis Capone")  => false
+ *
+ *
+ * 7. Last name cannot be transposed
+ *
+ *   "Alphonse Capone Gabriel" is NOT a valid transposition of "Alphonse Gabriel Capone"
+ *   "Capone Alphonse Gabriel" is NOT a valid transposition of "Alphonse Gabriel Capone"
+ *
+ *   knownAliases = ["Alphonse Gabriel Capone"]
+ *   nameMatch(knownAliases, "Alphonse Capone Gabriel") => false
+ *   nameMatch(knownAliases, "Capone Alphonse Gabriel") => false
+ *   nameMatch(knownAliases, "Capone Gabriel")          => false
+ */
 
-//build a method name_match? that receives an array of known names and a
-//name from a record to match.
+function nameMatch(knownAliases, name) {
+  // Implement me
 
-function name_match(knownNames, name) {
-  //initialize result
+  //initialize the result variable
+  //exact match
   let result = false;
-  //if the candidate name matches the record print true
-  for (let i = 0; i < knownNames.length; i++) {
-    if (knownNames[i] === name) {
+
+  for (let i = 0; i < knownAliases.length; i++) {
+    if (knownAliases[i] === name) {
       return (result = true);
     }
   }
 
-  // break the name into parts, if first name and last name checks out, true
+  // break the names in parts
   let names = name.split(" ");
 
-  // save submitted first name , last name , middle name for use
   let firstName = names[0];
   let middleName;
-  let lastName;
+  let lastName = names[names.length - 1];
+
   if (names.length > 2) {
     middleName = names[1];
-    lastName = names[2];
-  } else lastName = names[1];
+  }
 
-  console.log("NAME", name);
-
-  knownNames.forEach(n => {
+  knownAliases.forEach(n => {
     let nameParts = n.split(" ");
 
     if (nameParts.length != 3 || !middleName) {
+      // console.log(middleName)
+      //       console.log(nameParts[0], firstName)
+      //       console.log(nameParts[nameParts.length - 1], lastName)
       if (
         nameParts[0] == firstName &&
         nameParts[nameParts.length - 1] == lastName
@@ -38,9 +121,11 @@ function name_match(knownNames, name) {
         result = true;
         return;
       }
-      // there are 3 so we do another condition for middle Initial
     } else {
-      if (nameParts[1][0] === middleName[0]) {
+      if (
+        (nameParts[1][0] === middleName[0] && middleName.length == 1) ||
+        (middleName[0] === nameParts[1][0] && nameParts[1].length == 1)
+      ) {
         result = true;
         return;
       }
@@ -50,84 +135,122 @@ function name_match(knownNames, name) {
   return result;
 }
 
+/** Tests **/
+
+function assertEqual(expected, result, errorMessage) {
+  if (result !== expected) {
+    console.log(errorMessage);
+    console.log(`expected: ${expected}`);
+    console.log(`actual: ${result}`);
+    console.log("");
+  }
+}
+
 function test() {
-  // -------------------------------------------------------------
+  let knownAliases;
 
-  var known_names = ["Alphonse Gabriel Capone", "Al Capone"];
-  if (name_match(known_names, "Alphonse Gabriel Capone") !== true) {
-    console.log("error1");
-  }
-  if (name_match(known_names, "Al Capone") !== true) {
-    console.log("error2");
-  }
-  if (name_match(known_names, "Alphonse Francis Capone") !== false) {
-    console.log("error3");
-  }
-  // -------------------------------------------------------------
-  var known_names = ["Alphonse Capone"];
-  if (name_match(known_names, "Alphonse Gabriel Capone") !== true) {
-    console.log("error4");
-  }
-  if (name_match(known_names, "Alexander Capone") !== false) {
-    console.log("error5");
-  }
+  knownAliases = ["Alphonse Gabriel Capone", "Al Capone"];
+  assertEqual(
+    true,
+    nameMatch(knownAliases, "Alphonse Gabriel Capone"),
+    "error 1.1"
+  );
+  assertEqual(true, nameMatch(knownAliases, "Al Capone"), "error 1.2");
+  assertEqual(
+    false,
+    nameMatch(knownAliases, "Alphonse Francis Capone"),
+    "error 1.3"
+  );
 
-  var known_names = ["Alphonse Gabriel Capone"];
-  if (name_match(known_names, "Alphonse Capone") !== true) {
-    console.log("error6");
-  }
+  knownAliases = ["Alphonse Capone"];
+  assertEqual(
+    true,
+    nameMatch(knownAliases, "Alphonse Gabriel Capone"),
+    "error 2.1"
+  );
+  assertEqual(
+    true,
+    nameMatch(knownAliases, "Alphonse Francis Capone"),
+    "error 2.2"
+  );
+  assertEqual(false, nameMatch(knownAliases, "Alexander Capone"), "error 2.3");
 
-  var known_names = ["Alphonse Gabriel Capone", "Alphonse Francis Capone"];
-  if (name_match(known_names, "Alphonse Gabriel Capone") !== true) {
-    console.log("error7");
-  }
-  if (name_match(known_names, "Alphonse Francis Capone") !== true) {
-    console.log("error8");
-  }
-  if (name_match(known_names, "Alphonse Edward Capone") !== false) {
-    console.log("error9");
-  }
+  knownAliases = ["Alphonse Gabriel Capone"];
+  assertEqual(true, nameMatch(knownAliases, "Alphonse Capone"), "error 3.1");
+  assertEqual(
+    false,
+    nameMatch(knownAliases, "Alphonse Francis Capone"),
+    "error 3.2"
+  );
+  assertEqual(
+    false,
+    nameMatch(knownAliases, "Alphonse Edward Capone"),
+    "error 3.3"
+  );
 
-  var known_names = ["Alphonse Gabriel Capone", "Alphonse F Capone"];
-  if (name_match(known_names, "Alphonse G Capone") !== true) {
-    console.log("error10");
-  }
-  if (name_match(known_names, "Alphonse Francis Capone") !== true) {
-    console.log("error11");
-  }
-  if (name_match(known_names, "Alphonse E Capone") !== false) {
-    console.log("error12");
-  }
+  knownAliases = ["Alphonse Gabriel Capone", "Alphonse Francis Capone"];
+  assertEqual(
+    true,
+    nameMatch(knownAliases, "Alphonse Gabriel Capone"),
+    "error 4.1"
+  );
+  assertEqual(
+    true,
+    nameMatch(knownAliases, "Alphonse Francis Capone"),
+    "error 4.2"
+  );
+  assertEqual(
+    false,
+    nameMatch(knownAliases, "Alphonse Edward Capone"),
+    "error 4.3"
+  );
 
-  var known_names = ["Alphonse Gabriel Capone"];
-  if (name_match(known_names, "Gabriel Alphonse Capone") !== true) {
-    console.log("error13");
-  }
-  if (name_match(known_names, "Gabriel Capone") !== true) {
-    console.log("error14");
-  }
-  if (name_match(known_names, "Gabriel A Capone") !== true) {
-    console.log("error15");
-  }
-  if (name_match(known_names, "Capone Francis Alphonse") !== false) {
-    console.log("error16");
-  }
+  knownAliases = ["Alphonse Gabriel Capone", "Alphonse F Capone"];
+  assertEqual(true, nameMatch(knownAliases, "Alphonse G Capone"), "error 5.1");
+  assertEqual(
+    true,
+    nameMatch(knownAliases, "Alphonse Francis Capone"),
+    "error 5.2"
+  );
+  assertEqual(false, nameMatch(knownAliases, "Alphonse E Capone"), "error 5.3");
+  assertEqual(
+    false,
+    nameMatch(knownAliases, "Alphonse Edward Capone"),
+    "error 5.4"
+  );
+  assertEqual(
+    false,
+    nameMatch(knownAliases, "Alphonse Gregory Capone"),
+    "error 5.5"
+  );
 
-  var known_names = ["Alphonse Capone"];
-  if (name_match(known_names, "Alphonce Capone") !== true) {
-    console.log("error17");
-  }
-  if (name_match(known_names, "Alphonce Capome") !== true) {
-    console.log("error18");
-  }
-  if (name_match(known_names, "Alphons Capon") !== true) {
-    console.log("error19");
-  }
-  if (name_match(known_names, "Alphosne Capone") !== false) {
-    console.log("error20");
-  }
-  if (name_match(known_names, "Alfonse Capone") !== false) {
-    console.log("error21");
-  }
+  knownAliases = ["Alphonse Gabriel Capone"];
+  assertEqual(
+    true,
+    nameMatch(knownAliases, "Gabriel Alphonse Capone"),
+    "error 6.1"
+  );
+  assertEqual(true, nameMatch(knownAliases, "Gabriel A Capone"), "error 6.2");
+  assertEqual(true, nameMatch(knownAliases, "Gabriel Capone"), "error 6.3");
+  assertEqual(
+    false,
+    nameMatch(knownAliases, "Gabriel Francis Capone"),
+    "error 6.4"
+  );
+
+  knownAliases = ["Alphonse Gabriel Capone"];
+  assertEqual(
+    false,
+    nameMatch(knownAliases, "Alphonse Capone Gabriel"),
+    "error 7.1"
+  );
+  assertEqual(
+    false,
+    nameMatch(knownAliases, "Capone Alphonse Gabriel"),
+    "error 7.2"
+  );
+  assertEqual(false, nameMatch(knownAliases, "Capone Gabriel"), "error 7.3");
+
+  console.log("Test run finished");
 }
 test();
